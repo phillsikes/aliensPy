@@ -4,7 +4,6 @@ Each scene is a dictionary entry with:
     "art"     - optional name of an ASCII art constant in art.py
     "text"    - what the player reads
     "choices" - maps what the player types to the next scene
-    "default" - optional scene to go to when the input matches no choice
     "ending"  - True if this scene ends the game
 """
 
@@ -19,8 +18,8 @@ SCENES = {
                  'Would you like to play?\n     Type "Y" for yes or "N" for no:'),
         "choices": {
             "y": {"next": "crossroads"},
+            "n": {"next": "quit"},
         },
-        "default": "quit",
     },
     "crossroads": {
         "text": ("Let's begin!\n"
@@ -28,19 +27,19 @@ SCENES = {
                  '     Type "Left" or "Right"'),
         "choices": {
             "left": {"next": "egg_room"},
+            "right": {"next": "death_xenomorphs"},
         },
-        "default": "death_xenomorphs",
     },
     "egg_room": {
         "text": ("Good choice. The lifeform signal is getting stronger.\n"
                  "You've come to a room full of alien eggs. "
                  "The signal is coming from the other side.\n"
                  '     Type "Walk" to walk through the room quietly. '
-                 'Or type "Wait" to ride the lift across.'),
+                 'Or type "Lift" to ride the lift across.'),
         "choices": {
-            "wait": {"next": "three_doors"},
+            "walk": {"next": "death_facehugger_eggs"},
+            "lift": {"next": "three_doors"},
         },
-        "default": "death_facehugger_eggs",
     },
     "three_doors": {
         "text": ("Good idea, the eggs stir, but nothing emerges as you ride the lift.\n"
@@ -52,7 +51,6 @@ SCENES = {
             "yellow": {"next": "escape_newt"},
             "blue": {"next": "death_blue_door"},
         },
-        "default": "death_reactor",
     },
 
     # --- Endings ---
@@ -80,6 +78,7 @@ SCENES = {
                  + GAME_OVER),
         "ending": True,
     },
+    # Not reachable right now. The reactor countdown (Phase 3) will lead here.
     "death_reactor": {
         "text": "Sorry, you've run out of time and the colony self destructs\n" + GAME_OVER,
         "ending": True,
