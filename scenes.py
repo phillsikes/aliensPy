@@ -9,8 +9,10 @@ Each scene is a dictionary entry with:
     "on_enter"    - optional effects when the scene starts:
                     "time" (default -1), "ammo", "item" (an item to pick up),
                     "flag" (a hidden story event to remember, e.g. "queen_dead")
+    "style"       - optional "computer" for green typewriter text (logs, alarms)
     "hide_status" - True to hide the status bar (title screen, quitting)
-    "ending"      - True if this scene ends the game
+    "ending"      - ends the game: "death" (red, GAME OVER banner),
+                    "win" (VICTORY banner), or True (no banner)
 
 Each choice has:
     "next"      - the scene to go to
@@ -43,6 +45,7 @@ SCENES = {
 
     # --- Act 1: Landing ---
     "landing": {
+        "art": "DROPSHIP",
         "text": ("The dropship punches through the storm and slams down on LV-426.\n"
                  "Rain hammers the hull. Through the viewport the colony is dark.\n"
                  "No lights. No answer on any channel.\n\n"
@@ -63,6 +66,8 @@ SCENES = {
         "on_enter": {"time": 0},
     },
     "colony_gate": {
+        "art": "REACTOR",
+        "style": "computer",
         "text": ("You cross the rain-lashed landing pad to the colony's main entrance.\n"
                  "Inside, a recorded voice echoes through the empty halls:\n\n"
                  "    \"Warning. Reactor cooling failure. Evacuate the colony.\"\n\n"
@@ -93,6 +98,7 @@ SCENES = {
         },
     },
     "colony_logs": {
+        "style": "computer",
         "text": ("You wipe the dust off a terminal and scroll through the last entries:\n\n"
                  "  SECURITY 04/12: Lost contact with the survey team. Medical has one survivor.\n"
                  "  SECURITY 04/19: Creatures in the lower levels. Moved the kids to the\n"
@@ -143,6 +149,7 @@ SCENES = {
         },
     },
     "lab_notes": {
+        "style": "computer",
         "text": ("Notes scrawled on a clipboard:\n\n"
                  "  Specimens 1-4 ALIVE. Do NOT open the tubes.\n"
                  "  Pryce asked for the tube release codes again. Told him no.\n"
@@ -179,6 +186,7 @@ SCENES = {
         "on_enter": {"time": 0},
     },
     "pryce_betrayal": {
+        "art": "FACEHUGGER",
         "text": ("The door slams shut between you. Through the glass, Pryce taps at a wall panel.\n"
                  "\"Sorry, Marine. The company needs live specimens. Nothing personal.\"\n\n"
                  "With a hiss, the specimen tubes drain and swing open.\n"
@@ -216,6 +224,7 @@ SCENES = {
         },
     },
     "supply_room": {
+        "art": "TRACKER",
         "text": ("You pry open a dented supply locker.\n"
                  "Inside is a working motion tracker. It hums to life in your hands."),
         "choices": {
@@ -226,6 +235,7 @@ SCENES = {
 
     # --- Act 4: The Hive (every scene here costs 2 time) ---
     "egg_room": {
+        "art": "EGG",
         "text": ("The corridor opens into a chamber coated in black resin, ribbed like the\n"
                  "inside of some huge animal. Leathery eggs cover the floor in rows.\n"
                  "The signal is coming from the other side."),
@@ -396,6 +406,7 @@ SCENES = {
         "on_enter": {"time": -3},
     },
     "landing_pad": {
+        "art": "DROPSHIP",
         "text": ("You burst out onto the landing pad. The dropship's engines are already\n"
                  "screaming. You carry Newt up the ramp as it starts to close."),
         "choices": {
@@ -409,7 +420,7 @@ SCENES = {
         "text": ("You've found Newt and gotten her out!!! Congratulations!!!\n"
                  "Behind you, the colony vanishes in a blinding white flash.\n"
                  "You both fly safely back to Earth."),
-        "ending": True,
+        "ending": "win",
     },
     # The secret ending: escape with Newt while the Queen is still alive.
     "escape_secret": {
@@ -420,9 +431,10 @@ SCENES = {
                  "Down in the landing gear bay, something huge and black\n"
                  "slowly unfolds itself.\n\n"
                  "  ** SECRET ENDING **"),
-        "ending": True,
+        "ending": "win",
     },
     "escape_solo": {
+        "art": "DROPSHIP",
         "text": ("The dropship lifts off seconds before the colony vanishes in a white flash.\n"
                  "You made it off LV-426.\n"
                  "Newt didn't."),
@@ -431,40 +443,43 @@ SCENES = {
     "death_queen": {
         "text": ("The Queen turns, faster than anything that size should move.\n"
                  "You never make it past her.\n" + GAME_OVER),
-        "ending": True,
+        "ending": "death",
     },
     "death_betrayal": {
         "text": ("Pryce watches through the glass as the creatures close in.\n"
                  "The company gets its specimen.\n" + GAME_OVER),
-        "ending": True,
+        "ending": "death",
     },
     "death_shaft": {
         "text": ("You drop into the maintenance shaft. In the dark, the walls begin to move.\n"
                  "They were waiting for you.\n" + GAME_OVER),
-        "ending": True,
+        "ending": "death",
     },
     "death_xenomorphs": {
         "text": ("Oh No!! You walked right into a group of hungry Xenomorphs!!!\n     "
                  + GAME_OVER),
-        "ending": True,
+        "ending": "death",
     },
     "death_facehugger_eggs": {
+        "art": "FACEHUGGER",
         "text": "Ouch!! You've been attacked by a facehugger!!!\n     " + GAME_OVER,
-        "ending": True,
+        "ending": "death",
     },
     "death_red_door": {
         "text": "Sorry, you've been attacked by a massive Xenomorph!\n" + GAME_OVER,
-        "ending": True,
+        "ending": "death",
     },
     "death_blue_door": {
+        "art": "FACEHUGGER",
         "text": ("Sorry, you've been attacked by a facehugger and die as an Alien Queen is born\n"
                  + GAME_OVER),
-        "ending": True,
+        "ending": "death",
     },
     # The game sends the player here when the reactor countdown reaches 0.
     "death_reactor": {
+        "art": "REACTOR",
         "text": "Sorry, you've run out of time and the colony self destructs\n" + GAME_OVER,
-        "ending": True,
+        "ending": "death",
     },
     "quit": {
         "text": ("Well that's great, that's just great, man. "

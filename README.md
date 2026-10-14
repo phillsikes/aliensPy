@@ -26,7 +26,7 @@ License: MIT
   - [x] Act 4: The Hive
   - [x] Act 5: The Queen
   - [x] Act 6: Escape
-- [ ] Phase 5 — Art & presentation: new ASCII art, colors, typewriter text, ending screens
+- [x] Phase 5 — Art & presentation: new ASCII art, colors, typewriter text, ending screens
 ---
 ## Do you want to play the game?
 ### Make sure Python is installed:
@@ -52,5 +52,11 @@ git clone https://github.com/phillsikes/aliensPy.git
 python3 game.py
 ```
 The game should launch in the terminal/ command prompt and you can start playing.
+
+If your terminal shows odd symbols like `[32m` instead of colors, turn colors off:
+```
+python3 game.py --no-color
+```
+(Setting the `NO_COLOR` environment variable works too.)
 
 Watch out for those Xenomorphs!!

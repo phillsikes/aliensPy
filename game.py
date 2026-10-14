@@ -1,16 +1,18 @@
 """aliensPy - a text based adventure game inspired by the film ALIENS.
 
 Run with:  python3 game.py
+Add --no-color if your terminal shows odd symbols instead of colors.
 """
 
 import random
 
 import art
 from scenes import SCENES
-from utils import clear_screen, dramatic_dots, pause
+from utils import clear_screen, color, dramatic_dots, pause, typewriter
 
 STARTING_TIME = 34
 STARTING_AMMO = 30
+LOW_TIME = 5  # The TIME in the status bar turns red at or below this.
 
 # Said now and then when the player types something that isn't a choice.
 CONFUSED_LINES = [
@@ -38,14 +40,17 @@ def new_state():
 def show_status(state):
     """Print a one-line status bar, e.g. TIME: 9 | AMMO: 30 | ITEMS: tracker"""
     items = ", ".join(state["items"]) or "none"
-    print(f"TIME: {state['time']} | AMMO: {state['ammo']} | ITEMS: {items}")
+    time_text = f"TIME: {state['time']}"
+    if state["time"] <= LOW_TIME:
+        time_text = color(time_text, "red")
+    print(f"{time_text} | AMMO: {state['ammo']} | ITEMS: {items}")
     print("-" * 60)
 
 
 def tracker_ping(state):
     """Sometimes print a motion tracker ping to build tension."""
     if "tracker" in state["items"] and random.random() < 0.5:
-        print("[tracker] " + random.choice(TRACKER_PINGS))
+        print(color("[tracker] " + random.choice(TRACKER_PINGS), "green"))
         print()
 
 
@@ -88,19 +93,37 @@ def show_choices(choices, state):
 
 
 def show_scene(scene, state):
-    """Clear the screen, then print the status bar, art, and scene text."""
+    """Clear the screen, then print the status bar, art, scene text, and any banner."""
     clear_screen()
     if not scene.get("hide_status"):
         show_status(state)
         tracker_ping(state)
+    ending = scene.get("ending")
     if "art" in scene:
-        print(getattr(art, scene["art"]))
-    if scene.get("ending"):
+        art_text = getattr(art, scene["art"])
+        if ending == "death":
+            art_text = color(art_text, "red")
+        print(art_text)
+    if ending:
         pause(1.0)
-    print(scene["text"])
+
+    if scene.get("style") == "computer":
+        typewriter(scene["text"], "green")
+    elif ending == "death":
+        print(color(scene["text"], "red"))
+    else:
+        print(scene["text"])
     for item, text in scene.get("item_text", {}).items():
         if item in state["items"]:
             print(text)
+
+    # Ending screens finish with a big banner.
+    if ending == "death":
+        pause(0.5)
+        print(color(art.GAME_OVER, "red"))
+    elif ending == "win":
+        pause(0.5)
+        print(color(art.VICTORY, "green"))
 
 
 def ask(choice_names):
