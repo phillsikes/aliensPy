@@ -22,7 +22,7 @@ License: MIT
 - [ ] Phase 4 — Story: new acts (Landing, Operations Center, Medlab, the Hive, the Queen, Escape)
   - [x] Act 1: Landing
   - [x] Act 2: Operations Center
-  - [ ] Act 3: Medlab
+  - [x] Act 3: Medlab
   - [ ] Act 4: The Hive
   - [ ] Act 5: The Queen
   - [ ] Act 6: Escape
