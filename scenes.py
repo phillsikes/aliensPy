@@ -12,12 +12,14 @@ Each scene is a dictionary entry with:
     "ending"      - True if this scene ends the game
 
 Each choice has:
-    "next"     - the scene to go to
-    "label"    - a short description shown in the list of choices
-    "text"     - optional text shown right after the player picks it
-    "requires" - optional item needed; without it the choice is [LOCKED]
-    "ammo"     - optional ammo cost; without enough ammo the choice is [LOCKED]
-    "unless"   - optional item that hides this choice once the player has it
+    "next"      - the scene to go to
+    "label"     - a short description shown in the list of choices
+    "text"      - optional text shown right after the player picks it
+    "requires"  - optional item needed; without it the choice is [LOCKED]
+    "ammo"      - optional ammo cost; without enough ammo the choice is [LOCKED]
+    "unless"    - optional item that hides this choice once the player has it
+    "on_choose" - optional effects when picked, same as "on_enter"
+                  (but time defaults to 0)
 """
 
 GAME_OVER = "Game Over Man, GAME OVER!"
@@ -30,14 +32,95 @@ SCENES = {
                  "and make it off the planet alive.\n"
                  "Would you like to play?"),
         "choices": {
-            "y": {"next": "crossroads", "label": "Yes", "text": "Let's begin!"},
+            "y": {"next": "landing", "label": "Yes", "text": "Let's begin!"},
             "n": {"next": "quit", "label": "No"},
         },
         "on_enter": {"time": 0},
         "hide_status": True,
     },
+
+    # --- Act 1: Landing ---
+    "landing": {
+        "text": ("The dropship punches through the storm and slams down on LV-426.\n"
+                 "Rain hammers the hull. Through the viewport the colony is dark.\n"
+                 "No lights. No answer on any channel.\n\n"
+                 "The sergeant kicks open the weapons locker.\n"
+                 "\"One extra piece of gear each, Marine. Make it count.\""),
+        "choices": {
+            "tracker": {"next": "colony_gate", "label": "Motion tracker",
+                        "on_choose": {"item": "tracker"},
+                        "text": "You clip the motion tracker to your belt and head down the ramp."},
+            "flamer": {"next": "colony_gate", "label": "Flamethrower",
+                       "on_choose": {"item": "flamethrower"},
+                       "text": ("You heft the flamethrower. Its pilot light hisses blue "
+                                "as you head down the ramp.")},
+            "ammo": {"next": "colony_gate", "label": "Extra pulse rifle ammo (+30)",
+                     "on_choose": {"ammo": 30},
+                     "text": "You stuff your pockets with magazines and head down the ramp."},
+        },
+        "on_enter": {"time": 0},
+    },
+    "colony_gate": {
+        "text": ("You cross the rain-lashed landing pad to the colony's main entrance.\n"
+                 "Inside, a recorded voice echoes through the empty halls:\n\n"
+                 "    \"Warning. Reactor cooling failure. Evacuate the colony.\"\n\n"
+                 "The countdown has started. Watch your TIME."),
+        "choices": {
+            "enter": {"next": "ops_center", "label": "Go inside"},
+        },
+        "on_enter": {"time": 0},
+    },
+
+    # --- Act 2: Operations Center ---
+    "ops_center": {
+        "text": ("The Operations Center is deserted. Emergency lights flicker over\n"
+                 "overturned chairs and cold coffee cups. Terminals glow along one wall.\n"
+                 "A sealed security door leads into the terraforming compound.\n"
+                 "In the floor, a maintenance shaft drops into darkness. A foul smell drifts up."),
+        "item_text": {
+            "tracker": "Your motion tracker flickers with contacts somewhere down the shaft.",
+        },
+        "choices": {
+            "logs": {"next": "colony_logs", "label": "Read the colony logs on the terminals"},
+            "office": {"next": "admin_office", "label": "Search the administrator's office",
+                       "unless": "keycard"},
+            "door": {"next": "crossroads", "label": "Open the security door",
+                     "requires": "keycard",
+                     "text": "You swipe the keycard. The security door grinds open."},
+            "shaft": {"next": "death_shaft", "label": "Climb down the maintenance shaft"},
+        },
+    },
+    "colony_logs": {
+        "text": ("You wipe the dust off a terminal and scroll through the last entries:\n\n"
+                 "  SECURITY 04/12: Lost contact with the survey team. Medical has one survivor.\n"
+                 "  SECURITY 04/19: Creatures in the lower levels. Moved the kids to the\n"
+                 "                  shelter behind the YELLOW door.\n"
+                 "  ADMIN NOTE:     Security door only opens with my keycard. It's in my office.\n"
+                 "  LAST ENTRY:     Something is moving in the ceiling. We can hear it above us"),
+        "choices": {
+            "back": {"next": "ops_center", "label": "Step away from the terminal"},
+        },
+    },
+    "admin_office": {
+        "text": ("The administrator's office is wrecked. Under the desk lamp you spot the keycard,\n"
+                 "and crouched on the desk above it, a Xenomorph turns its eyeless head toward you."),
+        "choices": {
+            "fight": {"next": "ops_center", "label": "Open fire with your pulse rifle",
+                      "ammo": 20, "on_choose": {"item": "keycard"},
+                      "text": ("You open fire. The creature screeches and crashes out through the window.\n"
+                               "You grab the keycard and hurry back to Operations.")},
+            "burn": {"next": "ops_center", "label": "Torch it with the flamethrower",
+                     "requires": "flamethrower", "on_choose": {"item": "keycard"},
+                     "text": ("A roar of flame fills the office and the creature flees, shrieking.\n"
+                              "You snatch the keycard, still warm, and head back to Operations.")},
+            "back": {"next": "ops_center", "label": "Back away slowly",
+                     "text": "You ease out of the office. It doesn't follow... yet."},
+        },
+    },
+
+    # --- The compound (from alienPy) ---
     "crossroads": {
-        "text": ("You enter the terraforming compound, which way do you go?\n"
+        "text": ("You step into the terraforming compound, which way do you go?\n"
                  "A supply room door hangs open beside you."),
         "choices": {
             "left": {"next": "egg_room", "label": "Go left",
@@ -64,6 +147,10 @@ SCENES = {
             "lift": {"next": "three_doors", "label": "Ride the lift across",
                      "text": ("Good idea, the eggs stir, but nothing emerges as you ride the lift.\n"
                               "You reach the other side safely.")},
+            "burn": {"next": "three_doors", "label": "Burn a path with the flamethrower",
+                     "requires": "flamethrower",
+                     "text": ("You sweep the flamethrower across the eggs. They pop and hiss\n"
+                              "as you cross the room. You reach the other side safely.")},
         },
     },
     "three_doors": {
@@ -102,6 +189,11 @@ SCENES = {
         "text": ("You've found Newt!!! Congratulations!!!\n"
                  "You both escape aboard the Marine Dropship and fly safely back to Earth...\n"
                  "or do you."),
+        "ending": True,
+    },
+    "death_shaft": {
+        "text": ("You drop into the maintenance shaft. In the dark, the walls begin to move.\n"
+                 "They were waiting for you.\n" + GAME_OVER),
         "ending": True,
     },
     "death_xenomorphs": {

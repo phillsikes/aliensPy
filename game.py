@@ -9,7 +9,7 @@ import art
 from scenes import SCENES
 from utils import clear_screen, dramatic_dots, pause
 
-STARTING_TIME = 10
+STARTING_TIME = 15
 STARTING_AMMO = 30
 
 # Said now and then when the player types something that isn't a choice.
@@ -47,10 +47,9 @@ def tracker_ping(state):
         print()
 
 
-def apply_on_enter(scene, state):
-    """Apply a scene's effects. Most scenes cost 1 unit of time."""
-    effects = scene.get("on_enter", {})
-    state["time"] += effects.get("time", -1)
+def apply_effects(effects, state, default_time=0):
+    """Apply effects like {"time": -1, "ammo": 30, "item": "keycard"} to the state."""
+    state["time"] += effects.get("time", default_time)
     state["ammo"] += effects.get("ammo", 0)
     item = effects.get("item")
     if item and item not in state["items"]:
@@ -117,7 +116,8 @@ def play():
     while True:
         scene = SCENES[scene_name]
         if not scene.get("ending"):
-            apply_on_enter(scene, state)
+            # Most scenes cost 1 unit of time.
+            apply_effects(scene.get("on_enter", {}), state, default_time=-1)
             if state["time"] <= 0:
                 state["time"] = 0
                 scene_name = "death_reactor"
@@ -129,6 +129,7 @@ def play():
         answer = ask(open_choices)
         choice = scene["choices"][answer]
         state["ammo"] -= choice.get("ammo", 0)
+        apply_effects(choice.get("on_choose", {}), state)
         if "text" in choice:
             print(choice["text"])
         dramatic_dots()

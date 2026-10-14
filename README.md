@@ -20,6 +20,12 @@ License: MIT
 - [x] Phase 2 — Polish: input validation, screen clearing, pauses, play-again loop
 - [x] Phase 3 — Mechanics: inventory, ammo, reactor countdown, status bar, motion tracker
 - [ ] Phase 4 — Story: new acts (Landing, Operations Center, Medlab, the Hive, the Queen, Escape)
+  - [x] Act 1: Landing
+  - [x] Act 2: Operations Center
+  - [ ] Act 3: Medlab
+  - [ ] Act 4: The Hive
+  - [ ] Act 5: The Queen
+  - [ ] Act 6: Escape
 - [ ] Phase 5 — Art & presentation: new ASCII art, colors, typewriter text, ending screens
 ---
 ## Do you want to play the game?
