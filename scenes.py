@@ -302,11 +302,74 @@ SCENES = {
                  "She stares at your armor, then at your face, for a long moment.\n"
                  "\"You came,\" she whispers. \"Everyone else is gone.\""),
         "choices": {
-            # Acts 5 (The Queen) and 6 (Escape) will go here.
-            "go": {"next": "escape_newt", "label": "Take her hand and get out of here",
-                   "text": "Newt grips your hand tight. Together you head for the dropship."},
+            "go": {"next": "queen_chamber", "label": "Take her hand and get out of here",
+                   "text": "Newt grips your hand tight. Now you just have to get her out."},
         },
         "on_enter": {"time": -2},
+    },
+
+    # --- Act 5: The Queen (still in the hive, so still 2 time per scene) ---
+    "queen_chamber": {
+        "text": ("The only way out of the hive runs through its heart.\n"
+                 "You edge into a vast, steaming chamber. At its center squats the Queen:\n"
+                 "huge and black, her swollen egg sac strung up into the dark.\n"
+                 "Fresh eggs glisten at her feet.\n\n"
+                 "She hasn't seen you yet. Newt squeezes your hand so tight it hurts."),
+        "item_text": {
+            "tracker": ("Your motion tracker shows her guards drifting away from the far wall.\n"
+                        "There's a gap, if you're careful."),
+        },
+        "choices": {
+            "fight": {"next": "hive_exit", "label": "Open fire on the Queen",
+                      "ammo": 30,
+                      "text": ("You pour magazine after magazine into the Queen. She shrieks and\n"
+                               "crashes back into her egg sac, and you and Newt run through the smoke.")},
+            "sneak": {"next": "hive_exit", "label": "Sneak along the wall, watching the tracker",
+                      "requires": "tracker",
+                      "text": ("Step by careful step, you and Newt slip along the wall,\n"
+                               "timing every move to the tracker. The Queen never turns her head.")},
+            "burn": {"next": "queen_chase", "label": "Burn the eggs and run",
+                     "requires": "flamethrower",
+                     "text": ("You turn the flamethrower on her eggs. They burst into flame\n"
+                              "and the Queen SCREAMS. She tears free of her egg sac and comes after you.")},
+            "ducts": {"next": "newt_ducts_route", "label": "Let Newt lead you through the air ducts (slow)",
+                      "text": "Newt tugs your sleeve and points to a vent. \"I know a way,\" she whispers."},
+            "rush": {"next": "death_queen", "label": "Charge straight past her"},
+        },
+        "on_enter": {"time": -2},
+    },
+    "queen_chase": {
+        "text": ("You run with Newt in your arms. Behind you comes a sound like\n"
+                 "a train full of knives. Ahead is a blast door to the outer corridor."),
+        "choices": {
+            "seal": {"next": "hive_exit", "label": "Slam the blast door and weld it shut",
+                     "requires": "welding torch",
+                     "text": ("You weld the door shut just as the Queen hits it.\n"
+                              "The metal bulges inward... and holds.")},
+            "run": {"next": "hive_exit", "label": "Keep running through the side tunnels",
+                    "on_choose": {"time": -3},
+                    "text": ("You don't stop. You duck through every side tunnel you can find\n"
+                             "until the screams fall behind. It works, but it costs you time.")},
+        },
+        "on_enter": {"time": -2},
+    },
+    "newt_ducts_route": {
+        "text": ("Newt leads you through a maze of ducts barely wide enough for your shoulders.\n"
+                 "She never hesitates. The Queen's chamber falls away behind you,\n"
+                 "but so do the minutes."),
+        "choices": {
+            "out": {"next": "hive_exit", "label": "Climb out of the vent"},
+        },
+        "on_enter": {"time": -4},
+    },
+    "hive_exit": {
+        "text": ("You stumble out of the hive into the colony's outer corridors.\n"
+                 "Through a cracked window you can see the landing pad,\n"
+                 "and the dropship waiting in the storm."),
+        "choices": {
+            # Act 6 (Escape) will go here.
+            "go": {"next": "escape_newt", "label": "Run for the dropship"},
+        },
     },
 
     # --- Endings ---
@@ -314,6 +377,11 @@ SCENES = {
         "text": ("You've found Newt!!! Congratulations!!!\n"
                  "You both escape aboard the Marine Dropship and fly safely back to Earth...\n"
                  "or do you."),
+        "ending": True,
+    },
+    "death_queen": {
+        "text": ("The Queen turns, faster than anything that size should move.\n"
+                 "You never make it past her.\n" + GAME_OVER),
         "ending": True,
     },
     "death_betrayal": {

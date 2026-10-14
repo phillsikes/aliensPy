@@ -9,7 +9,7 @@ import art
 from scenes import SCENES
 from utils import clear_screen, dramatic_dots, pause
 
-STARTING_TIME = 26
+STARTING_TIME = 29
 STARTING_AMMO = 30
 
 # Said now and then when the player types something that isn't a choice.
