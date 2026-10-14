@@ -23,7 +23,7 @@ License: MIT
   - [x] Act 1: Landing
   - [x] Act 2: Operations Center
   - [x] Act 3: Medlab
-  - [ ] Act 4: The Hive
+  - [x] Act 4: The Hive
   - [ ] Act 5: The Queen
   - [ ] Act 6: Escape
 - [ ] Phase 5 — Art & presentation: new ASCII art, colors, typewriter text, ending screens

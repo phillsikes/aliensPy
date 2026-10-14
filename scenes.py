@@ -199,13 +199,15 @@ SCENES = {
         "on_enter": {"time": 0},
     },
 
-    # --- The compound (from alienPy) ---
+    # --- The compound ---
     "crossroads": {
         "text": ("You step into the terraforming compound, which way do you go?\n"
                  "A supply room door hangs open beside you."),
         "choices": {
             "left": {"next": "egg_room", "label": "Go left",
-                     "text": "Good choice. The lifeform signal is getting stronger."},
+                     "text": ("Good choice. The lifeform signal is getting stronger.\n"
+                              "The reactor alarm rises to a shriek. From here on, "
+                              "time runs out twice as fast.")},
             "right": {"next": "death_xenomorphs", "label": "Go right"},
             "search": {"next": "supply_room", "label": "Search the supply room",
                        "unless": "tracker"},
@@ -219,8 +221,11 @@ SCENES = {
         },
         "on_enter": {"time": -1, "item": "tracker"},
     },
+
+    # --- Act 4: The Hive (every scene here costs 2 time) ---
     "egg_room": {
-        "text": ("You've come to a room full of alien eggs. "
+        "text": ("The corridor opens into a chamber coated in black resin, ribbed like the\n"
+                 "inside of some huge animal. Leathery eggs cover the floor in rows.\n"
                  "The signal is coming from the other side."),
         "choices": {
             "walk": {"next": "death_facehugger_eggs",
@@ -233,16 +238,18 @@ SCENES = {
                      "text": ("You sweep the flamethrower across the eggs. They pop and hiss\n"
                               "as you cross the room. You reach the other side safely.")},
         },
+        "on_enter": {"time": -2},
     },
     "three_doors": {
         "text": ("You stand before 3 colored doors: red, yellow, and blue.\n"
                  "Newt must be behind one of these doors. Which one will you choose?"),
         "choices": {
             "red": {"next": "red_door", "label": "Open the red door"},
-            "yellow": {"next": "escape_newt", "label": "Open the yellow door"},
+            "yellow": {"next": "newt_shelter", "label": "Open the yellow door"},
             "blue": {"next": "death_blue_door", "label": "Open the blue door"},
             "listen": {"next": "listen_at_doors", "label": "Stop and listen at the doors"},
         },
+        "on_enter": {"time": -2},
     },
     "listen_at_doors": {
         "text": ("You hold your breath and listen.\n"
@@ -253,6 +260,7 @@ SCENES = {
         "choices": {
             "back": {"next": "three_doors", "label": "Step back from the doors"},
         },
+        "on_enter": {"time": -2},
     },
     "red_door": {
         "text": "You open the red door. A massive Xenomorph uncoils from the shadows!",
@@ -263,6 +271,42 @@ SCENES = {
                                "The room beyond is a dead end. You back out to the doors.")},
             "run": {"next": "death_red_door", "label": "Run for it"},
         },
+        "on_enter": {"time": -2},
+    },
+    "newt_shelter": {
+        "text": ("Behind the yellow door is an emergency shelter, torn apart.\n"
+                 "Cots are overturned. Small, dusty handprints lead to a loose vent grate,\n"
+                 "and from inside the vent comes the sound of someone trying not to breathe."),
+        "item_text": {
+            "tracker": "Your motion tracker shows one small contact, very still, just inside the vent.",
+        },
+        "choices": {
+            "call": {"next": "newt_found", "label": "Kneel down and call out softly"},
+            "grab": {"next": "newt_ducts", "label": "Reach into the vent and grab her",
+                     "text": ("A small hand bites down hard on yours, and the figure scrambles\n"
+                              "away deeper into the ducts. You crawl in after her.")},
+        },
+        "on_enter": {"time": -2},
+    },
+    "newt_ducts": {
+        "text": ("You crawl through the cramped, dark ducts, following the sound\n"
+                 "of small knees on metal. Precious time slips away.\n"
+                 "At last you corner her in a dead-end junction."),
+        "choices": {
+            "talk": {"next": "newt_found", "label": "Talk to her gently"},
+        },
+        "on_enter": {"time": -2},
+    },
+    "newt_found": {
+        "text": ("A small, filthy face peers out at you. It's Newt.\n"
+                 "She stares at your armor, then at your face, for a long moment.\n"
+                 "\"You came,\" she whispers. \"Everyone else is gone.\""),
+        "choices": {
+            # Acts 5 (The Queen) and 6 (Escape) will go here.
+            "go": {"next": "escape_newt", "label": "Take her hand and get out of here",
+                   "text": "Newt grips your hand tight. Together you head for the dropship."},
+        },
+        "on_enter": {"time": -2},
     },
 
     # --- Endings ---
