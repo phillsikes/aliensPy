@@ -75,7 +75,7 @@ SCENES = {
     "ops_center": {
         "text": ("The Operations Center is deserted. Emergency lights flicker over\n"
                  "overturned chairs and cold coffee cups. Terminals glow along one wall.\n"
-                 "A sealed security door leads into the terraforming compound.\n"
+                 "A sealed security door leads deeper into the colony.\n"
                  "In the floor, a maintenance shaft drops into darkness. A foul smell drifts up."),
         "item_text": {
             "tracker": "Your motion tracker flickers with contacts somewhere down the shaft.",
@@ -84,7 +84,7 @@ SCENES = {
             "logs": {"next": "colony_logs", "label": "Read the colony logs on the terminals"},
             "office": {"next": "admin_office", "label": "Search the administrator's office",
                        "unless": "keycard"},
-            "door": {"next": "crossroads", "label": "Open the security door",
+            "door": {"next": "medlab", "label": "Open the security door",
                      "requires": "keycard",
                      "text": "You swipe the keycard. The security door grinds open."},
             "shaft": {"next": "death_shaft", "label": "Climb down the maintenance shaft"},
@@ -116,6 +116,87 @@ SCENES = {
             "back": {"next": "ops_center", "label": "Back away slowly",
                      "text": "You ease out of the office. It doesn't follow... yet."},
         },
+    },
+
+    # --- Act 3: Medlab ---
+    "medlab": {
+        "text": ("Beyond the security door is the colony Medlab. Specimen tubes line the walls,\n"
+                 "and pale, many-legged things float inside them.\n\n"
+                 "A man in a spotless company jacket steps out from behind a lab bench.\n"
+                 "\"Dalton Pryce, company liaison. Am I glad to see you.\n"
+                 " There's a service lift in the sub-level lab that comes up right inside\n"
+                 " the compound. Saves a lot of time. Just escort me on the way.\"\n\n"
+                 "The only other way is the long quarantine corridor."),
+        "item_text": {
+            "tracker": "Your motion tracker twitches. Some of the things in those tubes are alive.",
+        },
+        "choices": {
+            "trust": {"next": "pryce_shortcut", "label": "Take Pryce's shortcut",
+                      "text": "\"Smart choice,\" Pryce says, a little too quickly."},
+            "refuse": {"next": "quarantine", "label": "Refuse and take the long way",
+                       "text": "Pryce shrugs. \"Your call. Your funeral.\""},
+            "notes": {"next": "lab_notes", "label": "Read the lab notes"},
+            "bench": {"next": "workbench", "label": "Search the workbench",
+                      "unless": "welding torch"},
+        },
+    },
+    "lab_notes": {
+        "text": ("Notes scrawled on a clipboard:\n\n"
+                 "  Specimens 1-4 ALIVE. Do NOT open the tubes.\n"
+                 "  Pryce asked for the tube release codes again. Told him no.\n"
+                 "  He keeps asking how long the creatures take to hatch inside a host.\n"
+                 "  Why does he want to know that?"),
+        "choices": {
+            "back": {"next": "medlab", "label": "Put the clipboard down"},
+        },
+    },
+    "workbench": {
+        "text": ("Under a tarp on the workbench you find a welding torch with a full tank.\n"
+                 "It could seal a door shut in a hurry."),
+        "choices": {
+            "back": {"next": "medlab", "label": "Head back to Pryce"},
+        },
+        "on_enter": {"time": -1, "item": "welding torch"},
+    },
+    "quarantine": {
+        "text": ("You take the long way through the quarantine corridor.\n"
+                 "Sealed doors, flickering lights, and nothing moving. It's slow, but it's quiet.\n"
+                 "At the far end, a hatch opens into the terraforming compound."),
+        "choices": {
+            "hatch": {"next": "crossroads", "label": "Climb through the hatch"},
+        },
+        "on_enter": {"time": -2},
+    },
+    "pryce_shortcut": {
+        "text": ("Pryce leads you down a stairwell to the sub-level lab.\n"
+                 "More specimen tubes glow in the dark.\n"
+                 "\"Lift's just through here,\" he says, and steps through a doorway ahead of you."),
+        "choices": {
+            "follow": {"next": "pryce_betrayal", "label": "Follow him"},
+        },
+        "on_enter": {"time": 0},
+    },
+    "pryce_betrayal": {
+        "text": ("The door slams shut between you. Through the glass, Pryce taps at a wall panel.\n"
+                 "\"Sorry, Marine. The company needs live specimens. Nothing personal.\"\n\n"
+                 "With a hiss, the specimen tubes drain and swing open.\n"
+                 "Something skitters across the floor toward you."),
+        "choices": {
+            "fight": {"next": "crossroads", "label": "Open fire with your pulse rifle",
+                      "ammo": 20,
+                      "text": ("You blast the creatures as they leap, then shoot out the door lock.\n"
+                               "You ride the service lift up into the compound. Pryce is gone.")},
+            "burn": {"next": "crossroads", "label": "Flood the floor with fire",
+                     "requires": "flamethrower",
+                     "text": ("The creatures shriek and curl up in the flames.\n"
+                              "You kick the door open and ride the service lift up into the compound.")},
+            "seal": {"next": "crossroads", "label": "Weld yourself into a supply closet",
+                     "requires": "welding torch",
+                     "text": ("You dive into a supply closet and weld the door shut behind you.\n"
+                              "Claws scrape the metal. You crawl out through a vent into the compound.")},
+            "beg": {"next": "death_betrayal", "label": "Pound on the glass and beg Pryce"},
+        },
+        "on_enter": {"time": 0},
     },
 
     # --- The compound (from alienPy) ---
@@ -189,6 +270,11 @@ SCENES = {
         "text": ("You've found Newt!!! Congratulations!!!\n"
                  "You both escape aboard the Marine Dropship and fly safely back to Earth...\n"
                  "or do you."),
+        "ending": True,
+    },
+    "death_betrayal": {
+        "text": ("Pryce watches through the glass as the creatures close in.\n"
+                 "The company gets its specimen.\n" + GAME_OVER),
         "ending": True,
     },
     "death_shaft": {
