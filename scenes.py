@@ -7,7 +7,8 @@ Each scene is a dictionary entry with:
                     e.g. {"tracker": "The tracker pings..."}
     "choices"     - maps what the player types to a choice (see below)
     "on_enter"    - optional effects when the scene starts:
-                    "time" (default -1), "ammo", "item" (an item to pick up)
+                    "time" (default -1), "ammo", "item" (an item to pick up),
+                    "flag" (a hidden story event to remember, e.g. "queen_dead")
     "hide_status" - True to hide the status bar (title screen, quitting)
     "ending"      - True if this scene ends the game
 
@@ -20,6 +21,7 @@ Each choice has:
     "unless"    - optional item that hides this choice once the player has it
     "on_choose" - optional effects when picked, same as "on_enter"
                   (but time defaults to 0)
+    "next_if"   - optional {flag: scene}; go to that scene instead if the flag is set
 """
 
 GAME_OVER = "Game Over Man, GAME OVER!"
@@ -321,9 +323,9 @@ SCENES = {
         },
         "choices": {
             "fight": {"next": "hive_exit", "label": "Open fire on the Queen",
-                      "ammo": 30,
-                      "text": ("You pour magazine after magazine into the Queen. She shrieks and\n"
-                               "crashes back into her egg sac, and you and Newt run through the smoke.")},
+                      "ammo": 30, "on_choose": {"flag": "queen_dead"},
+                      "text": ("You pour magazine after magazine into the Queen. She shrieks, crashes\n"
+                               "back into her egg sac, and lies still. You and Newt run through the smoke.")},
             "sneak": {"next": "hive_exit", "label": "Sneak along the wall, watching the tracker",
                       "requires": "tracker",
                       "text": ("Step by careful step, you and Newt slip along the wall,\n"
@@ -367,16 +369,63 @@ SCENES = {
                  "Through a cracked window you can see the landing pad,\n"
                  "and the dropship waiting in the storm."),
         "choices": {
-            # Act 6 (Escape) will go here.
-            "go": {"next": "escape_newt", "label": "Run for the dropship"},
+            "go": {"next": "escape_corridor", "label": "Run for the dropship"},
+        },
+    },
+
+    # --- Act 6: Escape ---
+    "escape_corridor": {
+        "text": ("The reactor alarm is one long scream now.\n"
+                 "    \"Detonation imminent. Detonation imminent.\"\n"
+                 "You run hand in hand with Newt. The floor shudders under your boots.\n\n"
+                 "Then a floor grate gives way beneath her. Newt's hand rips out of yours\n"
+                 "and she drops into the level below, screaming your name."),
+        "choices": {
+            "back": {"next": "newt_rescue", "label": "Go back down for her (costs time)"},
+            "leave": {"next": "escape_solo", "label": "Keep running for the dropship",
+                      "text": "You tell yourself there's nothing you can do. You keep running."},
+        },
+    },
+    "newt_rescue": {
+        "text": ("You drop through the hole after her. Steam everywhere, alarms everywhere.\n"
+                 "You find Newt by her voice, wedged behind a fallen pipe, and pull her free.\n"
+                 "Then you climb. Every second counts now."),
+        "choices": {
+            "climb": {"next": "landing_pad", "label": "Climb back up with Newt"},
+        },
+        "on_enter": {"time": -3},
+    },
+    "landing_pad": {
+        "text": ("You burst out onto the landing pad. The dropship's engines are already\n"
+                 "screaming. You carry Newt up the ramp as it starts to close."),
+        "choices": {
+            "launch": {"next": "escape_secret", "label": "Launch!",
+                       "next_if": {"queen_dead": "escape_newt"}},
         },
     },
 
     # --- Endings ---
     "escape_newt": {
-        "text": ("You've found Newt!!! Congratulations!!!\n"
-                 "You both escape aboard the Marine Dropship and fly safely back to Earth...\n"
-                 "or do you."),
+        "text": ("You've found Newt and gotten her out!!! Congratulations!!!\n"
+                 "Behind you, the colony vanishes in a blinding white flash.\n"
+                 "You both fly safely back to Earth."),
+        "ending": True,
+    },
+    # The secret ending: escape with Newt while the Queen is still alive.
+    "escape_secret": {
+        "text": ("You've found Newt and gotten her out!!! Congratulations!!!\n"
+                 "Behind you, the colony vanishes in a blinding white flash.\n"
+                 "You both fly safely back to Earth...\n\n"
+                 "or do you.\n\n"
+                 "Down in the landing gear bay, something huge and black\n"
+                 "slowly unfolds itself.\n\n"
+                 "  ** SECRET ENDING **"),
+        "ending": True,
+    },
+    "escape_solo": {
+        "text": ("The dropship lifts off seconds before the colony vanishes in a white flash.\n"
+                 "You made it off LV-426.\n"
+                 "Newt didn't."),
         "ending": True,
     },
     "death_queen": {

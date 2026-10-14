@@ -9,7 +9,7 @@ import art
 from scenes import SCENES
 from utils import clear_screen, dramatic_dots, pause
 
-STARTING_TIME = 29
+STARTING_TIME = 34
 STARTING_AMMO = 30
 
 # Said now and then when the player types something that isn't a choice.
@@ -30,7 +30,9 @@ TRACKER_PINGS = [
 
 def new_state():
     """Return the player's state at the start of a game."""
-    return {"time": STARTING_TIME, "ammo": STARTING_AMMO, "items": []}
+    # "flags" remember story events (like "queen_dead"). Unlike items,
+    # they aren't shown in the status bar.
+    return {"time": STARTING_TIME, "ammo": STARTING_AMMO, "items": [], "flags": []}
 
 
 def show_status(state):
@@ -54,6 +56,9 @@ def apply_effects(effects, state, default_time=0):
     item = effects.get("item")
     if item and item not in state["items"]:
         state["items"].append(item)
+    flag = effects.get("flag")
+    if flag and flag not in state["flags"]:
+        state["flags"].append(flag)
 
 
 def lock_reason(choice, state):
@@ -134,6 +139,10 @@ def play():
             print(choice["text"])
         dramatic_dots()
         scene_name = choice["next"]
+        # A choice can lead somewhere else if a flag is set.
+        for flag, other_scene in choice.get("next_if", {}).items():
+            if flag in state["flags"]:
+                scene_name = other_scene
 
 
 def main():
