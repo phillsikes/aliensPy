@@ -55,3 +55,8 @@ def dramatic_dots(count=3, delay=0.4):
         print(".", end="", flush=True)
         time.sleep(delay)
     print()
+
+
+def wait_for_enter():
+    """Wait until the player presses Enter, so they have time to read."""
+    input("\n[Press Enter to continue]")
