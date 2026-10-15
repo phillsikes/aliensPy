@@ -8,7 +8,7 @@ import random
 
 import art
 from scenes import SCENES
-from utils import clear_screen, color, dramatic_dots, pause, typewriter
+from utils import clear_screen, color, dramatic_dots, pause, typewriter, wait_for_enter
 
 STARTING_TIME = 34
 STARTING_AMMO = 30
@@ -158,9 +158,11 @@ def play():
         choice = scene["choices"][answer]
         state["ammo"] -= choice.get("ammo", 0)
         apply_effects(choice.get("on_choose", {}), state)
-        if "text" in choice:
-            print(choice["text"])
         dramatic_dots()
+        if "text" in choice:
+            # Keep the result on screen until the player has read it.
+            print(choice["text"])
+            wait_for_enter()
         scene_name = choice["next"]
         # A choice can lead somewhere else if a flag is set.
         for flag, other_scene in choice.get("next_if", {}).items():
