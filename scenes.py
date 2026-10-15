@@ -11,6 +11,7 @@ Each scene is a dictionary entry with:
                     "flag" (a hidden story event to remember, e.g. "queen_hunting")
     "style"       - optional "computer" for green typewriter text (logs, alarms)
     "hide_status" - True to hide the status bar (title screen, quitting)
+    "unlocks_prologue" - True on endings that unlock the prologue (escaping LV-426)
     "ending"      - ends the game: "death" (red, GAME OVER banner),
                     "win" (VICTORY banner), or True (no banner)
 
@@ -21,12 +22,18 @@ Each choice has:
     "requires"  - optional item needed; without it the choice is [LOCKED]
     "ammo"      - optional ammo cost; without enough ammo the choice is [LOCKED]
     "unless"    - optional item that hides this choice once the player has it
+    "only_if"   - optional flag; the choice is hidden unless the flag is set
     "on_choose" - optional effects when picked, same as "on_enter"
                   (but time defaults to 0)
     "next_if"   - optional {flag: scene}; go to that scene instead if the flag is set
 """
 
 GAME_OVER = "Game Over Man, GAME OVER!"
+
+# Closes the prologue's survival endings and leads into the main game.
+PROLOGUE_EPILOGUE = ("\nFifty-seven years later, a terraforming colony is built on that planetoid.\n"
+                     "Its name is LV-426.\n\n"
+                     "  ** END OF PROLOGUE **")
 
 SCENES = {
     "start": {
@@ -38,6 +45,8 @@ SCENES = {
         "choices": {
             "y": {"next": "landing", "label": "Yes", "text": "Let's begin!"},
             "n": {"next": "quit", "label": "No"},
+            "prologue": {"next": "pro_wake", "label": "Play the prologue: The Signal",
+                         "only_if": "prologue_unlocked"},
         },
         "on_enter": {"time": 0},
         "hide_status": True,
@@ -418,6 +427,7 @@ SCENES = {
 
     # --- Endings ---
     "escape_newt": {
+        "unlocks_prologue": True,
         "text": ("You've found Newt and gotten her out!!! Congratulations!!!\n"
                  "Behind you, the colony vanishes in a blinding white flash.\n"
                  "You both fly safely back to Earth."),
@@ -426,6 +436,7 @@ SCENES = {
     # The secret ending: escape with Newt after burning the Queen's eggs and
     # running without sealing her in. She's loose, and she followed you.
     "escape_secret": {
+        "unlocks_prologue": True,
         "text": ("You've found Newt and gotten her out!!! Congratulations!!!\n"
                  "Behind you, the colony vanishes in a blinding white flash.\n"
                  "You both fly safely back to Earth...\n\n"
@@ -436,6 +447,7 @@ SCENES = {
         "ending": "win",
     },
     "escape_solo": {
+        "unlocks_prologue": True,
         "art": "DROPSHIP",
         "text": ("The dropship lifts off seconds before the colony vanishes in a white flash.\n"
                  "You made it off LV-426.\n"
@@ -487,6 +499,132 @@ SCENES = {
         "text": ("Well that's great, that's just great, man. "
                  "Now what are we supposed to do?"),
         "ending": True,
+        "hide_status": True,
+    },
+
+    # --- Prologue: The Signal (unlocked by escaping LV-426) ---
+    # No status bar and no countdown here: TIME and AMMO belong to the main game.
+    "pro_wake": {
+        "art": "TOWING_SHIP",
+        "style": "computer",
+        "text": ("PROLOGUE: THE SIGNAL\n\n"
+                 "Commercial towing vessel BELLWETHER. Crew: 5. Cargo: 20 million tons of ore.\n"
+                 "Status: returning to Earth.\n\n"
+                 "The cryo pods hiss open months too early. The ship's computer speaks:\n"
+                 "  \"COURSE ALTERED. SIGNAL OF UNKNOWN ORIGIN DETECTED.\n"
+                 "   UNDER COMPANY CONTRACT, THE CREW MUST INVESTIGATE.\"\n\n"
+                 "You're the ship's second officer, and the captain wants your call."),
+        "choices": {
+            "land": {"next": "pro_landing", "label": "Set down and investigate",
+                     "text": "The captain nods. \"Suit up.\""},
+            "home": {"next": "pro_home", "label": "Ignore the signal and fly home"},
+        },
+        "on_enter": {"time": 0},
+        "hide_status": True,
+    },
+    "pro_landing": {
+        "text": ("The Bellwether shudders down through a howling storm onto a black,\n"
+                 "rocky planetoid. You follow the signal across the rocks with the\n"
+                 "captain and Danvers, the ship's engineer.\n\n"
+                 "Out of the dust rises a derelict ship: huge, curved,\n"
+                 "and not built by anyone human."),
+        "choices": {
+            "enter": {"next": "pro_derelict", "label": "Go inside"},
+        },
+        "on_enter": {"time": 0},
+        "hide_status": True,
+    },
+    "pro_derelict": {
+        "text": ("Inside, the walls look grown rather than built. In a vast chamber sits\n"
+                 "a giant fossilized pilot, fused to its chair. Its chest has burst open\n"
+                 "from the inside.\n\n"
+                 "Danvers finds a hole in the floor. Far below, something glows blue.\n"
+                 "\"I'm going down,\" he says, already uncoiling a rope."),
+        "choices": {
+            "down": {"next": "pro_eggs", "label": "Let Danvers climb down"},
+            "decode": {"next": "pro_decode",
+                       "label": "Stop him, and run the signal through your suit computer"},
+        },
+        "on_enter": {"time": 0},
+        "hide_status": True,
+    },
+    "pro_decode": {
+        "style": "computer",
+        "text": ("Your suit computer chews on the signal for a long minute, then prints:\n\n"
+                 "  TRANSMISSION ANALYSIS: NOT A DISTRESS CALL.\n"
+                 "  PATTERN MATCH: WARNING.\n"
+                 "  MEANING: DO NOT APPROACH."),
+        "choices": {
+            "recall": {"next": "pro_warned", "label": "Order everyone back to the ship, now"},
+            "down": {"next": "pro_eggs", "label": "Ignore it and let Danvers climb down"},
+        },
+        "on_enter": {"time": 0},
+        "hide_status": True,
+    },
+    "pro_eggs": {
+        "art": "EGG",
+        "text": ("Danvers' helmet light sweeps across a cavern floor covered in leathery eggs,\n"
+                 "under a thin layer of shimmering blue mist.\n"
+                 "\"You've got to see this,\" he radios, and leans over one.\n\n"
+                 "It opens like a flower."),
+        "choices": {
+            "pull": {"next": "pro_airlock", "label": "Haul him back up!",
+                     "text": ("Something leaps out of the egg and hits his faceplate. You and the\n"
+                              "captain haul him up the rope. He's limp and silent, and something\n"
+                              "is wrapped tight around his face.")},
+        },
+        "on_enter": {"time": 0},
+        "hide_status": True,
+    },
+    "pro_airlock": {
+        "art": "FACEHUGGER",
+        "text": ("You carry Danvers back to the ship. You're first through the airlock,\n"
+                 "and the inner door seals behind you. Over the radio, the captain shouts:\n"
+                 "\"Open the hatch! He needs the medlab!\"\n\n"
+                 "Quarantine rules are clear: anything that might be infected stays outside\n"
+                 "for 24 hours. Your hand is on the control."),
+        "choices": {
+            "open": {"next": "pro_open", "label": "Open the airlock"},
+            "refuse": {"next": "pro_sealed", "label": "Keep it sealed and follow quarantine"},
+        },
+        "on_enter": {"time": 0},
+        "hide_status": True,
+    },
+
+    # --- Prologue endings ---
+    "pro_home": {
+        "text": ("You override the computer and turn for home. The crew loses their shares,\n"
+                 "and nobody speaks to you for the rest of the trip.\n"
+                 "Behind you, the signal keeps calling. Someone else will answer it.\n"
+                 + PROLOGUE_EPILOGUE),
+        "ending": True,
+        "hide_status": True,
+    },
+    "pro_warned": {
+        "text": ("You order everyone back. Danvers grumbles, but he climbs away from the hole.\n"
+                 "You lift off and send a warning to the company: DO NOT LAND.\n"
+                 "The company thanks you for your report. Then, quietly, it sells the coordinates.\n"
+                 + PROLOGUE_EPILOGUE),
+        "ending": True,
+        "hide_status": True,
+    },
+    "pro_sealed": {
+        "text": ("You keep the airlock sealed. The captain curses you over the radio\n"
+                 "until the storm drowns him out. By morning, the thing on Danvers' face is gone,\n"
+                 "and he wakes up hungry, laughing, and fine. Quarantine holds anyway.\n"
+                 "Danvers never comes aboard. That night, the captain stops answering the radio.\n"
+                 "You lift off alone with the last two crew and a very long report.\n"
+                 + PROLOGUE_EPILOGUE),
+        "ending": True,
+        "hide_status": True,
+    },
+    "pro_open": {
+        "text": ("You open the airlock. In the medlab, nobody can get the creature off Danvers.\n"
+                 "Then one morning it's simply gone, and he wakes up hungry and laughing.\n"
+                 "At dinner, he starts to choke. Something tears its way out of his chest\n"
+                 "and disappears into the ship's air ducts.\n\n"
+                 "One by one, the crew of the Bellwether stops answering.\n" + GAME_OVER),
+        "ending": "death",
         "hide_status": True,
     },
 }

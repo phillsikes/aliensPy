@@ -27,6 +27,7 @@ License: MIT
   - [x] Act 5: The Queen
   - [x] Act 6: Escape
 - [x] Phase 5 — Art & presentation: new ASCII art, colors, typewriter text, ending screens
+- [x] Prologue — The Signal: a short chapter aboard a towing ship, unlocked by escaping LV-426
 ---
 ## Do you want to play the game?
 ### Make sure Python is installed:
@@ -58,5 +59,10 @@ If your terminal shows odd symbols like `[32m` instead of colors, turn colors of
 python3 game.py --no-color
 ```
 (Setting the `NO_COLOR` environment variable works too.)
+
+### Unlock the prologue
+Escape LV-426 once (with or without Newt) to unlock **Prologue: The Signal**.
+Type `prologue` on the title screen to play it.
+The unlock is saved in `aliensPy_save.txt` next to `game.py`. Delete that file to lock the prologue again.
 
 Watch out for those Xenomorphs!!
