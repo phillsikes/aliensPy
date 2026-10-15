@@ -32,7 +32,7 @@ TRACKER_PINGS = [
 
 def new_state():
     """Return the player's state at the start of a game."""
-    # "flags" remember story events (like "queen_dead"). Unlike items,
+    # "flags" remember story events (like "queen_hunting"). Unlike items,
     # they aren't shown in the status bar.
     return {"time": STARTING_TIME, "ammo": STARTING_AMMO, "items": [], "flags": []}
 
