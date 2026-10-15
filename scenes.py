@@ -8,7 +8,7 @@ Each scene is a dictionary entry with:
     "choices"     - maps what the player types to a choice (see below)
     "on_enter"    - optional effects when the scene starts:
                     "time" (default -1), "ammo", "item" (an item to pick up),
-                    "flag" (a hidden story event to remember, e.g. "queen_dead")
+                    "flag" (a hidden story event to remember, e.g. "queen_hunting")
     "style"       - optional "computer" for green typewriter text (logs, alarms)
     "hide_status" - True to hide the status bar (title screen, quitting)
     "ending"      - ends the game: "death" (red, GAME OVER banner),
@@ -333,7 +333,7 @@ SCENES = {
         },
         "choices": {
             "fight": {"next": "hive_exit", "label": "Open fire on the Queen",
-                      "ammo": 30, "on_choose": {"flag": "queen_dead"},
+                      "ammo": 30,
                       "text": ("You pour magazine after magazine into the Queen. She shrieks, crashes\n"
                                "back into her egg sac, and lies still. You and Newt run through the smoke.")},
             "sneak": {"next": "hive_exit", "label": "Sneak along the wall, watching the tracker",
@@ -359,9 +359,10 @@ SCENES = {
                      "text": ("You weld the door shut just as the Queen hits it.\n"
                               "The metal bulges inward... and holds.")},
             "run": {"next": "hive_exit", "label": "Keep running through the side tunnels",
-                    "on_choose": {"time": -3},
+                    "on_choose": {"time": -3, "flag": "queen_hunting"},
                     "text": ("You don't stop. You duck through every side tunnel you can find\n"
-                             "until the screams fall behind. It works, but it costs you time.")},
+                             "until the screams fall behind. It works, but it costs you time.\n"
+                             "You never find out where she went.")},
         },
         "on_enter": {"time": -2},
     },
@@ -410,8 +411,8 @@ SCENES = {
         "text": ("You burst out onto the landing pad. The dropship's engines are already\n"
                  "screaming. You carry Newt up the ramp as it starts to close."),
         "choices": {
-            "launch": {"next": "escape_secret", "label": "Launch!",
-                       "next_if": {"queen_dead": "escape_newt"}},
+            "launch": {"next": "escape_newt", "label": "Launch!",
+                       "next_if": {"queen_hunting": "escape_secret"}},
         },
     },
 
@@ -422,7 +423,8 @@ SCENES = {
                  "You both fly safely back to Earth."),
         "ending": "win",
     },
-    # The secret ending: escape with Newt while the Queen is still alive.
+    # The secret ending: escape with Newt after burning the Queen's eggs and
+    # running without sealing her in. She's loose, and she followed you.
     "escape_secret": {
         "text": ("You've found Newt and gotten her out!!! Congratulations!!!\n"
                  "Behind you, the colony vanishes in a blinding white flash.\n"
